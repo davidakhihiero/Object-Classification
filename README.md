@@ -5,7 +5,7 @@ Using Deep Neural Networks for Object Classification <br>
 In this project, I built and trained 3 neural network models for object classification (cats and dogs images); a simple multilayer perceptron
 model, a convolutional neural network and a simple residual neural network.
 
-Dataset from Kaggle: https://www.kaggle.com/competitions/dogs-vs-cats/data
+Dataset from Kaggle: <a href="https://www.kaggle.com/competitions/dogs-vs-cats/data" target="_blank">Cats and Dogs Dataset</a>
 
 The MLP had 4 hidden layers and fit the training set to about 90% accuracy after 30 epochs but performed very poorly on the dev set with
 an accuracy of about 61.5%. 
