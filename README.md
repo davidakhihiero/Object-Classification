@@ -1,5 +1,5 @@
 # Object-Classification
-Using Deep Neural Networks for Object Classification \n
+Using Deep Neural Networks for Object Classification <br>
 ![Cat and Dog Image](https://github.com/davidakhihiero/Object-Classification/blob/main/images/Cat%20and%20Dog.jpg?raw=true)
 
 In this project, I built and trained 3 neural network models for object classification (cats and dogs images); a simple multilayer perceptron
