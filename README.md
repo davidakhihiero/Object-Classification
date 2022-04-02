@@ -5,7 +5,7 @@ Using Deep Neural Networks for Object Classification <br>
 In this project, I built and trained 3 neural network models for object classification (cats and dogs images); a simple multilayer perceptron
 model, a convolutional neural network and a simple residual neural network.
 
-Dataset from Kaggle: <a href="https://www.kaggle.com/competitions/dogs-vs-cats/data" target="_blank">Cats and Dogs Dataset</a>
+Dataset from Kaggle: <a href="https://www.kaggle.com/competitions/dogs-vs-cats/data" target="_blank">Cats and Dogs Dataset</a> <br>
 The dataset of 25,000 labelled cats and dogs images was split into a 20,000-5,000 training-validation set. The training data was augmented by flipping
 the images horizontally to increase the training images to 40,000.
 
