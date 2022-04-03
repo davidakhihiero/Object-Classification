@@ -17,4 +17,7 @@ The CNN which had three convolution-maxpool blocks and about 4.6 million trainab
 
 The ResNet had four residual-pooling blocks, immediately after a convolution-maxpool block, with each residual block containing two convolutional 
 layers. The model had about 3.9 million trainable parameters. The model trained for 10 epochs to fit the training data to an accuracy of 96% and had an
-accuracy of 90.4% on the dev set.
+accuracy of 90.4% on the dev set. <br>
+
+![Dog Prediction](https://github.com/davidakhihiero/Object-Classification/blob/main/images/prediction_1.png?raw=true)
+![Cat Prediction](https://github.com/davidakhihiero/Object-Classification/blob/main/images/prediction_2.png?raw=true)
