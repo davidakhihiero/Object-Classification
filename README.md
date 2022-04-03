@@ -9,6 +9,8 @@ Dataset from Kaggle: <a href="https://www.kaggle.com/competitions/dogs-vs-cats/d
 The dataset of 25,000 labelled cats and dogs images was split into a 20,000-5,000 training-validation set. The training data was augmented by flipping
 the images horizontally to increase the training images to 40,000.
 
+The model input size was (64, 64, 1) so the training/dev images were read in as GRAYSCALE and resized to 64 x 64.
+
 The MLP had 4 hidden layers, about 10.4 million trainable parameters and fit the training set to about 90% accuracy after 30 epochs but performed 
 very poorly on the dev set with an accuracy of about 61.5%. 
 
