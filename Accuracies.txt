@@ -1,3 +1,0 @@
-MLP: Train: 90% Dev: 61.5%
-CNN: Train: 96% Dev: 85.5%
-ResNet: 

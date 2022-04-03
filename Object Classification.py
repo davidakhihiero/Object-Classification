@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
 import numpy as np
 import tensorflow as tf
 import cv2
@@ -11,14 +10,12 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import copy
 
-
 train_data_directory = "./data/train"
 validation_data_directory = "./data/dev"
 IMG_SIZE = 64
 CHANNELS = 1
 class_size = 2
 lr = 0.01
-
 
 
 def label_data(img_name):
@@ -47,6 +44,10 @@ def create_data(img_dir, validation_data=False):
         
         data.append([np.array(img1)/255, np.array(label)])
         if not validation_data:
+            """
+            Augment the training data by horizontally flipping each training example to 
+            generate a "new" training example
+            """
             img2 = cv2.flip(img1, 1)
             data.append([np.array(img2)/255, np.array(label)])
     
@@ -54,9 +55,7 @@ def create_data(img_dir, validation_data=False):
     return data
     
 
-
 train_data = create_data(train_data_directory)
-
 
 validation_data = create_data(validation_data_directory, True)
 
@@ -67,11 +66,11 @@ Y_train = np.array([data[1] for data in train_data]).reshape(-1, class_size)
 X_train_mlp = np.array([data[0] for data in train_data]).reshape(-1, IMG_SIZE * IMG_SIZE * CHANNELS)
 
 
+
 X_validation = np.array([data[0] for data in validation_data]).reshape(-1, IMG_SIZE, IMG_SIZE, CHANNELS)
 Y_validation = np.array([data[1] for data in validation_data]).reshape(-1, class_size)
 
 X_validation_mlp = np.array([data[0] for data in validation_data]).reshape(-1, IMG_SIZE * IMG_SIZE * CHANNELS)
-
 
 
 def mlp_model(input_shape, layer_sizes, dropout_rate=0.0):
@@ -107,16 +106,22 @@ model = mlp_model((IMG_SIZE * IMG_SIZE * CHANNELS, ), [1500, 1500, 1000, 500, cl
 optimizer = tf.keras.optimizers.Adam(learning_rate=lr, beta_1 = 0.9, beta_2=0.999)
 model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
+
 model.summary()
 
+
 history = model.fit(X_train_mlp, Y_train, batch_size=32, epochs=30)
+
 
 predictions = model.predict(X_validation_mlp, batch_size=32)
 
 
 correct = tf.equal(tf.math.argmax(predictions, axis=1), tf.math.argmax(Y_validation, axis=1))
 validation_accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
-print("MLP Validation Accuracy = ", float(validation_accuracy) * 100, "%")
+print("Validation Accuracy = ", float(validation_accuracy) * 100, "%")
+
+
+model.save("./models/mlp_model.h5")
 
 n_row, n_col = 3, 3
 samples = np.random.choice(len(X_validation_mlp), n_row * n_col, replace=False)
@@ -173,18 +178,21 @@ cnn_model = simple_cnn_model((IMG_SIZE, IMG_SIZE, 1, ), 3, [500, 500], 2, 0.2)
 optimizer = tf.keras.optimizers.Adam(learning_rate=lr, beta_1 = 0.9, beta_2=0.999)
 cnn_model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
+
 cnn_model.summary()
 
 
 history = cnn_model.fit(X_train, Y_train, batch_size=32, epochs=10)
 
-cnn_predictions = cnn_model.predict(X_validation, batch_size=32)
 
+cnn_predictions = cnn_model.predict(X_validation, batch_size=32)
 
 correct = tf.equal(tf.math.argmax(cnn_predictions, axis=1), tf.math.argmax(Y_validation, axis=1))
 validation_accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
 print("CNN Validation Accuracy = ", float(validation_accuracy) * 100, "%")
 
+
+cnn_model.save("./models/cnn_model.h5")
 
 n_row, n_col = 3, 3
 cnn_samples = np.random.choice(len(X_validation), n_row * n_col, replace=False)
@@ -216,13 +224,13 @@ def residual_block(X, n_conv_layers, n_filters, filter_size, dropout_rate=0.0):
 
     if X_copy.shape[-1] != n_filters:
         X_copy = tf.keras.layers.Conv2D(n_filters, filter_size, padding='same', strides=(1, 1))(X_copy)
+        X_copy = tf.keras.layers.BatchNormalization()(X_copy)
 
     for i in range(n_conv_layers):
         X = tf.keras.layers.Conv2D(n_filters, filter_size, padding='same', strides=(1, 1))(X)
         X = tf.keras.layers.BatchNormalization()(X)
         if i < n_conv_layers - 1:
             X = tf.keras.layers.Activation('relu')(X)
-            X = tf.keras.layers.Dropout(dropout_rate)(X)
 
     X = tf.keras.layers.Add()([X_copy, X])
     X = tf.keras.layers.BatchNormalization()(X)
@@ -230,6 +238,7 @@ def residual_block(X, n_conv_layers, n_filters, filter_size, dropout_rate=0.0):
     X = tf.keras.layers.Dropout(dropout_rate)(X)
 
     return X
+
 
 
 def simple_residual_network(input_shape, res_block_sizes, n_dense, n_classes, dropout_rate=0.0):
@@ -244,7 +253,7 @@ def simple_residual_network(input_shape, res_block_sizes, n_dense, n_classes, dr
     :return: A residual network model
     """
     input_layer = tf.keras.layers.Input(shape=input_shape)
-    X = tf.keras.layers.Conv2D(64, 7, padding='same', strides=(1, 1))(input_layer)
+    X = tf.keras.layers.Conv2D(64, 3, padding='same', strides=(1, 1))(input_layer)
     X = tf.keras.layers.BatchNormalization()(X)
     X = tf.keras.layers.Activation('relu')(X)
     X = tf.keras.layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2))(X)
@@ -276,12 +285,13 @@ def simple_residual_network(input_shape, res_block_sizes, n_dense, n_classes, dr
     return model
 
 
-resnet_model = simple_residual_network((IMG_SIZE, IMG_SIZE, 1, ), [2, 2, 2], [500, 500], 2, 0.2)
+resnet_model = simple_residual_network((IMG_SIZE, IMG_SIZE, 1, ), [2, 2, 2, 2], [500], 2, 0.2)
 optimizer = tf.keras.optimizers.Adam(learning_rate=lr, beta_1 = 0.9, beta_2=0.999)
 resnet_model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 resnet_model.summary()
+
 
 history = resnet_model.fit(X_train, Y_train, batch_size=32, epochs=10)
 
@@ -290,6 +300,9 @@ resnet_predictions = resnet_model.predict(X_validation, batch_size=32)
 correct = tf.equal(tf.math.argmax(resnet_predictions, axis=1), tf.math.argmax(Y_validation, axis=1))
 validation_accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
 print("Resnet Validation Accuracy = ", float(validation_accuracy) * 100, "%")
+
+
+resnet_model.save("./models/resnet_model.h5")
 
 n_row, n_col = 3, 3
 resnet_samples = np.random.choice(len(X_validation), n_row * n_col, replace=False)
@@ -301,6 +314,5 @@ for i in range(n_row):
         ax[i, j].imshow(X_validation[resnet_samples[i * n_col + j]].reshape(IMG_SIZE, IMG_SIZE))
         ax[i, j].label_outer()
         label = "Cat" if float(tf.math.argmax(predictions[resnet_samples[i * n_col + j]])) == 0.0 else "Dog"
-        ax[i, j].set_title(label)
+        ax[i, j].set_xlabel(label)
 plt.show()
-
