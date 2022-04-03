@@ -121,7 +121,7 @@ validation_accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
 print("Validation Accuracy = ", float(validation_accuracy) * 100, "%")
 
 
-model.save("./models/mlp_model.h5")
+# model.save("./models/mlp_model.h5")
 
 n_row, n_col = 3, 3
 samples = np.random.choice(len(X_validation_mlp), n_row * n_col, replace=False)
@@ -192,7 +192,7 @@ validation_accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
 print("CNN Validation Accuracy = ", float(validation_accuracy) * 100, "%")
 
 
-cnn_model.save("./models/cnn_model.h5")
+# cnn_model.save("./models/cnn_model.h5")
 
 n_row, n_col = 3, 3
 cnn_samples = np.random.choice(len(X_validation), n_row * n_col, replace=False)
@@ -302,7 +302,7 @@ validation_accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
 print("Resnet Validation Accuracy = ", float(validation_accuracy) * 100, "%")
 
 
-resnet_model.save("./models/resnet_model.h5")
+# resnet_model.save("./models/resnet_model.h5")
 
 n_row, n_col = 3, 3
 resnet_samples = np.random.choice(len(X_validation), n_row * n_col, replace=False)
