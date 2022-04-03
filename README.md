@@ -15,5 +15,6 @@ very poorly on the dev set with an accuracy of about 61.5%.
 The CNN which had three convolution-maxpool blocks and about 4.6 million trainable parameters performed much better on the dev set with an accuracy of
 85.5% after fitting the training data to about 96% accuracy after only 10 epochs.
 
-The ResNet had three residual-pooling blocks, immediately after a convolution-maxpool block, with each residual block containing two convolutional 
-layers and about 3.9 million trainable parameters.
+The ResNet had four residual-pooling blocks, immediately after a convolution-maxpool block, with each residual block containing two convolutional 
+layers. The model had about 3.9 million trainable parameters. The model trained for 10 epochs to fit the training data to an accuracy of 96% and had an
+accuracy of 90.4% on the dev set.
